@@ -20,7 +20,7 @@ def upload_excel(request):
            x = excelform.save()
            path = str(excelform.instance.sheet.path)
            user_profile_from_excel(path)
-           return redirect(upload_excel)       
+           return redirect(upload_excel)
 
    excelform = excel_form()
    userform = user_form()
