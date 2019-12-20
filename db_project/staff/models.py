@@ -7,6 +7,9 @@ class State(models.Model):
     def __str__(self):
         return self.name
 
+
+
+
 class City(models.Model):
     state = models.ForeignKey(State, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
@@ -14,19 +17,57 @@ class City(models.Model):
     def __str__(self):
         return self.name
 
+
+
+
+class AdhaarList(models.Model):
+    num = models.IntegerField()
+
+    def __str__(self):
+        return self.num
+
+
+
+
 class user_profile(models.Model):
 
      GENDER_CHOICES = (
     ('Male', 'Male'),
     ('Female', 'Female'),
     )
-
+     adhaar_linked = models.BooleanField(default=False)
      adhaar_no = models.IntegerField()
      name = models.CharField(max_length = 100)
      DOB = models.DateTimeField(null=True)
      gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
      city = models.ForeignKey(City, on_delete=models.CASCADE,null=True)
      state = models.ForeignKey(State, on_delete=models.CASCADE,null=True)
+     username = models.CharField(max_length=200,null=True)
+     Password = models.CharField(max_length=200,null=True)
+
+
+
+     def __str__(self):
+         return self.name
+
+
+
+
+
+class Staff(models.Model):
+    name = models.CharField(max_length = 100)
+    city = models.ForeignKey(City, on_delete=models.CASCADE,null=True)
+    state = models.ForeignKey(State, on_delete=models.CASCADE,null=True)
+    username = models.CharField(max_length=200,null=True)
+    Password = models.CharField(max_length=200,null=True)
+
+    def __init__(self):
+        self.is_staff = True
+
+    def __str__(self):
+         return self.name
+
+
 
 
 
