@@ -18,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
-
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '6!ijkl#2#l*emudsy#3k5^kzg#yrqg_*)bufj&*ic7+jbdbn!8'
 
@@ -59,7 +59,7 @@ ROOT_URLCONF = 'db_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -133,7 +133,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 SEND_GRID_API_KEY = os.getenv(
     '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')
 

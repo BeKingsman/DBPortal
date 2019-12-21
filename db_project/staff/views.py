@@ -47,7 +47,7 @@ def upload_excel(request):
 
    excelform = excel_form()
    userform = user_form()
-   return render(request,'staff/excel.html',{'form':excelform,'user_form':userform})
+   return render(request,'excel.html',{'form':excelform,'user_form':userform})
  return HttpResponse("You Are Not Authenticated")
 
 def get_model(name,model):
@@ -94,7 +94,7 @@ def load_cities(request):
     for city in cities:
         print(city)
 
-    return render(request, 'staff/city_dropdown_list_options.html', {'cities': cities})
+    return render(request, 'city_dropdown_list_options.html', {'cities': cities})
 
 
 class Dber_list(generics.ListCreateAPIView):
@@ -136,7 +136,7 @@ def staff_mail(request):
         send_mail(subject,content,sent_by,send_to,fail_silently=False,)
         return redirect('home-page')
      form = staff_email_form()
-     return render(request,'staff/staff_mail.html',{'form':form})
+     return render(request,'staff_mail.html',{'form':form})
 
 def register(request):
 
@@ -169,7 +169,7 @@ def register(request):
             return HttpResponse("<h3>User Not Found</h3>")
 
     reg_form = register_form()
-    return render(request,'staff/register.html',{'r_form':reg_form})
+    return render(request,'register.html',{'r_form':reg_form})
 
 
 def login_view(request):
@@ -185,7 +185,7 @@ def login_view(request):
                         return redirect('home-page')
         return redirect('dber-login')
     l_form = login_form()
-    return render(request,'staff/login.html',{'l_form':l_form})
+    return render(request,'login.html',{'l_form':l_form})
 
 
 
@@ -212,9 +212,9 @@ def HomePage(request):
             city1 = request.POST.get('city')
             # query = request.POST.get('query')
             list4 = custom_filter(name1,state1,city1,list)
-            return render(request,'staff/home.html',{'list':list4})
+            return render(request,'home.html',{'list':list4})
 
-        return render(request,'staff/home.html',{'list':list})
+        return render(request,'home.html',{'list':list})
     return redirect('upload_excel')
 
 def logout_view(request):
@@ -247,4 +247,4 @@ def profile_update(request):
         l_form = staffprofileForm(instance=request.user.staff)
     else:
         l_form = profileForm(instance=request.user.user_profile)
-    return render(request,'staff/new_password.html',{'l_form':l_form})
+    return render(request,'new_password.html',{'l_form':l_form})

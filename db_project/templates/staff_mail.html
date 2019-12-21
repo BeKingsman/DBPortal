@@ -1,4 +1,4 @@
-{% extends 'staff/base.html' %}
+{% extends 'base.html' %}
 
 
 {% block content %}
@@ -11,10 +11,11 @@
 
 </div>
 <div>
-        <h3>login</h3>
+        <h2>Send Mail</h2>
+        <h4>This mail will be sent to all registered user of your city</h4>
 <form method="post" class="login_form">
     {% csrf_token %}
-    {{ l_form.as_p }}
+    {{form.as_p }}
 </div>
 
   <button type="submit" class="btn btn-primary">Submit</button>

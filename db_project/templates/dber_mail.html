@@ -1,4 +1,4 @@
-{% extends 'staff/base.html' %}
+{% extends 'base.html' %}
 
 
 {% block content %}
@@ -11,8 +11,7 @@
 
 </div>
 <div>
-        <h2>Send Mail</h2>
-        <h4>This mail will be sent to all registered user of your city</h4>
+        <h3>Send Mail</h3>
 <form method="post" class="login_form">
     {% csrf_token %}
     {{form.as_p }}

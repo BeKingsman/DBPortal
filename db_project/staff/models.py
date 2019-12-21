@@ -73,5 +73,5 @@ class Staff(models.Model):
 
 
 class user_excel(models.Model):
-    sheet = models.FileField(upload_to='',null=True)
+    sheet = models.FileField(upload_to='excel_sheets/',null=True)
     uploaded_by = models.ForeignKey(User,on_delete = models.CASCADE,null = True,related_name= 'excel_sheets')
