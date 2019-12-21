@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import mixins
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+# from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import *
 from rest_framework import generics,reverse
 from .permissions import *
@@ -224,8 +224,9 @@ def logout_view(request):
 @login_required
 def profile_update(request):
     if request.method == 'POST':
+
         if request.user.is_staff==True:
-            l_form = staffprofileForm(data=request.POST,instance=request.user.Staff)
+            l_form = staffprofileForm(data=request.POST,instance=request.user.staff)
         else:
             l_form = profileForm(data=request.POST, instance=request.user.user_profile)
         if l_form.is_valid():
@@ -238,8 +239,12 @@ def profile_update(request):
                             user.save()
                             return redirect('dber-logout')
         return HttpResponse("<h3>INVALID CREDENTIALS...!!!!")
+    print(request.user.staff.city)
+    print("")
     if request.user.is_staff==True:
-        l_form = staffprofileForm(instance=request.user.Staff)
+        print(request.user.staff.city)
+        print("")
+        l_form = staffprofileForm(instance=request.user.staff)
     else:
         l_form = profileForm(instance=request.user.user_profile)
     return render(request,'staff/new_password.html',{'l_form':l_form})
