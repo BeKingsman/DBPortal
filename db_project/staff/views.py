@@ -18,9 +18,9 @@ from rest_framework import generics,reverse
 from .permissions import *
 from django.core.mail import send_mail
 from django.contrib.auth import logout,authenticate,login
-
-
 from .models import *
+from .extras import *
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 def HomePage(request):
@@ -87,8 +87,6 @@ def user_profile_from_excel(path):
 
 
 def load_cities(request):
-    print("")
-    print("")
     State_id = request.GET.get('state')
     # st_obj = State.objects.get(id=State_id)
     cities = City.objects.filter(state_id=State_id).order_by('name')
@@ -110,16 +108,35 @@ class Dber_detail(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes = ['IsStaffOrAdmin']
 
 
-def mail(request):
-    send_mail(
-    'testing',
-    'Here is the message.',
-    'harsh.rollno15@gmail.com',
-    ['harshagarwal8055@gmail.com'],
-    fail_silently=False,
-)
-    return HttpResponse(done)
+def Dber_mail(request):
+ if request.method == 'POST':
+    form = email_form(request.POST)
+    subject = request.POST.get('subject')
+    content = request.POST.get('content')
+    send_to = request.POST.get('send_to')
+    sent_by = request.user.user_profile.email
+    send_mail(subject,content,sent_by,[send_to],fail_silently=False,)
+    return redirect('home-page')
+ form = email_form()
+ return render(request,'staff/dber_mail.html',{'form':form})
 
+@login_required
+def staff_mail(request):
+  if request.user.is_staff==True:
+     if request.method == 'POST':
+        form = staff_email_form(request.POST)
+        subject = request.POST.get('subject')
+        content = request.POST.get('content')
+        sent_by = request.user.staff.email
+        city = request.user.staff.city
+        objs = user_profile.objects.filter(city= city,adhaar_linked=True)
+        send_to =[]
+        for x in objs:
+            send_to.append(x.email)
+        send_mail(subject,content,sent_by,send_to,fail_silently=False,)
+        return redirect('home-page')
+     form = staff_email_form()
+     return render(request,'staff/staff_mail.html',{'form':form})
 
 def register(request):
 
@@ -132,16 +149,20 @@ def register(request):
                     if int(user.adhaar_no) == int(adh):
                         u_name = request.POST['username']
                         passw = request.POST['password']
+                        email = request.POST['email']
                         user.adhaar_linked = True
                         user.username = u_name
                         user.Password = passw
-                        user.save()
+                        user.email = email
+
                         u_name = request.POST['username']
                         passw = request.POST['password']
                         try:
                             new = User.objects.create(username =u_name,password=passw)
                             new.save()
-                            return render(request,'staff/login.html')
+                            user.user = new
+                            user.save()
+                            return redirect('dber-logout')
                         except exceptions:
                            pass
                 return HttpResponse("adhhar number not matched , please contact administrator")
@@ -164,9 +185,50 @@ def login_view(request):
                         return redirect('home-page')
         return HttpResponse("<h3>INVALID CREDENTIALS...!!!!")
     l_form = login_form()
-    return render(request,'staff/register.html',{'l_form':l_form})
+    return render(request,'staff/login.html',{'l_form':l_form})
 
 
 
+
+def custom_filter(name1,state1,city1,list):
+    list1 = getquery_name('name',name1,list)
+    list2 = getquery_state('state',state1,list1)
+    list3 = getquery_city('city',city1,list2)
+    return list3
+
+@login_required
 def HomePage(request):
-    return render(request,'staff/home.html')
+    if request.user.is_staff != True:
+        list = User.objects.all()
+        if request.method == 'POST':
+            # adhaar = request.POST.get('adhaar')
+            name1 = request.POST.get('name')
+            state1 = request.POST.get('state')
+            city1 = request.POST.get('city')
+            # query = request.POST.get('query')
+            list4 = custom_filter(name1,state1,city1,list)
+            return render(request,'staff/home.html',{'list':list4})
+
+        return render(request,'staff/home.html',{'list':list})
+    return redirect('upload_excel')
+
+def logout_view(request):
+    logout(request)
+    return redirect('dber-login')
+
+def change_password(request):
+        if request.method == 'POST':
+            l_form = change_password_form(request.POST)
+            if l_form.is_valid():
+                u_name = request.POST['username']
+                passw = request.POST['password']
+                npassw = request.POST['new_password']
+                user = authenticate(username=u_name,password=passw)
+                if user is not None:
+                        if user.is_active:
+                            user.set_password(npassw)
+                            user.save()
+                            return redirect('home-page')
+            return HttpResponse("<h3>INVALID CREDENTIALS...!!!!")
+        l_form = change_password_form()
+        return render(request,'staff/new_password.html',{'l_form':l_form})
