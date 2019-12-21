@@ -50,6 +50,8 @@ def upload_excel(request):
    return render(request,'excel.html',{'form':excelform,'user_form':userform})
  return HttpResponse("You Are Not Authenticated")
 
+
+
 def get_model(name,model):
     obj = model.objects.get(name = name)
     return obj
@@ -57,7 +59,6 @@ def get_model(name,model):
 
 
 def user_profile_from_excel(path):
-
      book = xlrd.open_workbook(path)
      sheet = book.sheet_by_index(0)
      row = sheet.nrows
@@ -85,6 +86,8 @@ def user_profile_from_excel(path):
               new.save()
 
 
+
+
 def load_cities(request):
     State_id = request.GET.get('state')
     # st_obj = State.objects.get(id=State_id)
@@ -97,14 +100,20 @@ def load_cities(request):
     return render(request, 'city_dropdown_list_options.html', {'cities': cities})
 
 
+
+
 class Dber_list(generics.ListCreateAPIView):
     queryset = user_profile.objects.all()
     serializer_class = user_profile_serializer
+
 
 class Dber_detail(generics.RetrieveUpdateDestroyAPIView):
     queryset = user_profile.objects.all()
     serializer_class = user_profile_serializer
     # permission_classes = ['IsStaffOrAdmin']
+
+
+
 
 @login_required
 def Dber_mail(request):
@@ -119,6 +128,9 @@ def Dber_mail(request):
     return redirect('home-page')
  form = email_form()
  return render(request,'staff/dber_mail.html',{'form':form})
+
+
+
 
 @login_required
 def staff_mail(request):
@@ -138,8 +150,10 @@ def staff_mail(request):
      form = staff_email_form()
      return render(request,'staff_mail.html',{'form':form})
 
-def register(request):
 
+
+
+def register(request):
     if request.method == 'POST':
             reg_form = register_form(request.POST)
             if reg_form.is_valid:
@@ -172,6 +186,9 @@ def register(request):
     return render(request,'register.html',{'r_form':reg_form})
 
 
+
+
+
 def login_view(request):
     if request.method == 'POST':
         l_form = login_form(request.POST)
@@ -196,6 +213,8 @@ def custom_filter(name1,state1,city1,list):
     list3 = getquery_city('city',city1,list2)
     return list3
 
+
+
 @login_required
 def HomePage(request):
     if request.user.is_staff != True:
@@ -217,9 +236,15 @@ def HomePage(request):
         return render(request,'home.html',{'list':list})
     return redirect('upload_excel')
 
+
+
+
+
 def logout_view(request):
     logout(request)
     return redirect('dber-login')
+
+
 
 @login_required
 def profile_update(request):
