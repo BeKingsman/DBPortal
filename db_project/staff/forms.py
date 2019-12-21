@@ -35,10 +35,15 @@ class login_form(forms.Form):
     username = forms.CharField(max_length=200,label = 'user-name')
     password = forms.CharField(max_length=200,label = 'password')
 
-class change_password_form(forms.Form):
-    username = forms.CharField(max_length=200,label = 'user-name')
-    password = forms.CharField(max_length=200,label = 'password')
-    new_password = forms.CharField(max_length=200,label = 'new_password')
+class profileForm(forms.ModelForm):
+    class Meta:
+        model = user_profile
+        fields = ['Password','name','email','state','city','DOB']
+
+class staffprofileForm(forms.ModelForm):
+    class Meta:
+        model = Staff
+        fields = ['Password','name','email','state','city']
 
 class email_form(forms.Form):
     subject = forms.CharField(max_length =500,label = 'Subject')

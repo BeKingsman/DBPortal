@@ -7,7 +7,7 @@ urlpatterns = [
 
     path('home/',views.HomePage,name = 'home-page'),
     path('register/',views.register,name = 'dber-register'),
-    path('password/',views.change_password,name = 'change_password'),
+    path('update/',views.profile_update,name = 'profile_update'),
     path('login/',views.login_view,name = 'dber-login'),
     path('logout/',views.logout_view,name = 'dber-logout'),
     path('upload/',views.upload_excel,name = 'upload_excel'),

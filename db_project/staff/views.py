@@ -23,8 +23,7 @@ from .extras import *
 from django.contrib.auth.decorators import login_required
 # Create your views here.
 
-def HomePage(request):
-   return render(request,'staff/home.html')
+
 
 
 
@@ -107,7 +106,7 @@ class Dber_detail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = user_profile_serializer
     # permission_classes = ['IsStaffOrAdmin']
 
-
+@login_required
 def Dber_mail(request):
  if request.method == 'POST':
     form = email_form(request.POST)
@@ -115,6 +114,7 @@ def Dber_mail(request):
     content = request.POST.get('content')
     send_to = request.POST.get('send_to')
     sent_by = request.user.user_profile.email
+    # sent_by = 'sunilkumar.sobha@gmail.com'
     send_mail(subject,content,sent_by,[send_to],fail_silently=False,)
     return redirect('home-page')
  form = email_form()
@@ -129,7 +129,7 @@ def staff_mail(request):
         content = request.POST.get('content')
         sent_by = request.user.staff.email
         city = request.user.staff.city
-        objs = user_profile.objects.filter(city= city,adhaar_linked=True)
+        objs = user_profile.objects.filter(city = city,adhaar_linked=True)
         send_to =[]
         for x in objs:
             send_to.append(x.email)
@@ -183,7 +183,7 @@ def login_view(request):
                     if user.is_active:
                         login(request, user)
                         return redirect('home-page')
-        return HttpResponse("<h3>INVALID CREDENTIALS...!!!!")
+        return redirect('dber-login')
     l_form = login_form()
     return render(request,'staff/login.html',{'l_form':l_form})
 
@@ -199,7 +199,12 @@ def custom_filter(name1,state1,city1,list):
 @login_required
 def HomePage(request):
     if request.user.is_staff != True:
-        list = User.objects.all()
+        klist = User.objects.all()
+        list =[]
+        for x in klist:
+            if x.is_staff != True:
+                list.append(x)
+
         if request.method == 'POST':
             # adhaar = request.POST.get('adhaar')
             name1 = request.POST.get('name')
@@ -216,19 +221,25 @@ def logout_view(request):
     logout(request)
     return redirect('dber-login')
 
-def change_password(request):
-        if request.method == 'POST':
-            l_form = change_password_form(request.POST)
-            if l_form.is_valid():
-                u_name = request.POST['username']
-                passw = request.POST['password']
-                npassw = request.POST['new_password']
-                user = authenticate(username=u_name,password=passw)
-                if user is not None:
-                        if user.is_active:
-                            user.set_password(npassw)
+@login_required
+def profile_update(request):
+    if request.method == 'POST':
+        if request.user.is_staff==True:
+            l_form = staffprofileForm(data=request.POST,instance=request.user.Staff)
+        else:
+            l_form = profileForm(data=request.POST, instance=request.user.user_profile)
+        if l_form.is_valid():
+                update = l_form.save(commit=False)
+                l_form.user = request.user
+                l_form.save()
+                user = request.user
+                if user.is_active:
+                            user.set_password(l_form.instance.Password)
                             user.save()
-                            return redirect('home-page')
-            return HttpResponse("<h3>INVALID CREDENTIALS...!!!!")
-        l_form = change_password_form()
-        return render(request,'staff/new_password.html',{'l_form':l_form})
+                            return redirect('dber-logout')
+        return HttpResponse("<h3>INVALID CREDENTIALS...!!!!")
+    if request.user.is_staff==True:
+        l_form = staffprofileForm(instance=request.user.Staff)
+    else:
+        l_form = profileForm(instance=request.user.user_profile)
+    return render(request,'staff/new_password.html',{'l_form':l_form})
