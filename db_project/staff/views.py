@@ -32,6 +32,7 @@ from django.contrib.auth.decorators import login_required
 def upload_excel(request):
  if request.user.is_staff==True:
    if request.method == 'POST':
+
        userform = user_form(request.POST)
        excelform = excel_form(request.POST,request.FILES)
        if(userform.is_valid()):
@@ -48,7 +49,7 @@ def upload_excel(request):
    excelform = excel_form()
    userform = user_form()
    return render(request,'excel.html',{'form':excelform,'user_form':userform})
- return HttpResponse("You Are Not Authenticated")
+ return render(request,'error.html')
 
 
 
@@ -77,9 +78,6 @@ def user_profile_from_excel(path):
               state_model = get_model(state,State)
               print(DOB)
               new = str((xlrd.xldate_as_datetime(DOB,book.datemode)))[0:10]
-
-              print(new)
-              print("")
               birth = str(DOB)
 
               new = user_profile.objects.create(adhaar_no=adhaar_no,name=name,DOB=new,gender= gender,city=city_model, state=state_model)
@@ -115,7 +113,7 @@ class Dber_detail(generics.RetrieveUpdateDestroyAPIView):
 
 
 
-@login_required
+@login_required(login_url='dber-logout')
 def Dber_mail(request):
  if request.method == 'POST':
     form = email_form(request.POST)
@@ -127,12 +125,12 @@ def Dber_mail(request):
     send_mail(subject,content,sent_by,[send_to],fail_silently=False,)
     return redirect('home-page')
  form = email_form()
- return render(request,'staff/dber_mail.html',{'form':form})
+ return render(request,'dber_mail.html',{'form':form})
 
 
 
 
-@login_required
+@login_required(login_url='dber-logout')
 def staff_mail(request):
   if request.user.is_staff==True:
      if request.method == 'POST':
@@ -174,13 +172,16 @@ def register(request):
                         try:
                             new = User.objects.create(username =u_name,password=passw)
                             new.save()
+                            new.set_password(passw)
                             user.user = new
+                            new.save()
                             user.save()
                             return redirect('dber-logout')
-                        except exceptions:
-                           pass
-                return HttpResponse("adhhar number not matched , please contact administrator")
-            return HttpResponse("<h3>User Not Found</h3>")
+                        except:
+                           pass      
+                # print(HttpResponse("adhhar number not matched , please contact administrator"))
+            # return HttpResponse("<h3>User Not Found</h3>")
+            return render(request,'error.html')
 
     reg_form = register_form()
     return render(request,'register.html',{'r_form':reg_form})
@@ -215,7 +216,7 @@ def custom_filter(name1,state1,city1,list):
 
 
 
-@login_required
+@login_required(login_url='dber-logout')
 def HomePage(request):
     if request.user.is_staff != True:
         klist = User.objects.all()
@@ -246,7 +247,7 @@ def logout_view(request):
 
 
 
-@login_required
+@login_required(login_url='dber-logout')
 def profile_update(request):
     if request.method == 'POST':
 
@@ -263,7 +264,7 @@ def profile_update(request):
                             user.set_password(l_form.instance.Password)
                             user.save()
                             return redirect('dber-logout')
-        return HttpResponse("<h3>INVALID CREDENTIALS...!!!!")
+        return render(request,'error.html')
     print(request.user.staff.city)
     print("")
     if request.user.is_staff==True:

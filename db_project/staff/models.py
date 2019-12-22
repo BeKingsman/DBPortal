@@ -59,9 +59,9 @@ class Staff(models.Model):
     name = models.CharField(max_length = 100)
     city = models.ForeignKey(City, on_delete=models.CASCADE,null=True)
     state = models.ForeignKey(State, on_delete=models.CASCADE,null=True)
+    user= models.OneToOneField(User,null = True,on_delete=models.CASCADE)
     username = models.CharField(max_length=200,null=True)
     Password = models.CharField(max_length=200,null=True)
-    user= models.OneToOneField(User,null = True,on_delete=models.CASCADE)
     email = models.EmailField(null = True)
 
 

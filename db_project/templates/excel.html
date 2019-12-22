@@ -10,7 +10,12 @@
 <form method="post" class="login_form" enctype= "multipart/form-data" novalidate>
     {% csrf_token %}
     {{ form.as_p }}
+    <div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+    </form>    
 </div>
+
     <div class="container">
         <div><h6>or</h6></div>
     </div>

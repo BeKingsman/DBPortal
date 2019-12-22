@@ -12,7 +12,7 @@ class excel_form(forms.ModelForm):
 class user_form(forms.ModelForm):
     class Meta:
         model = user_profile
-        exclude = ['adhaar_linked','Password','username','email']
+        exclude = ['adhaar_linked','Password','username','email','user']
 
 
 
